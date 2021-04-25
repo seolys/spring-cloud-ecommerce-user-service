@@ -25,8 +25,9 @@ public class UserController {
 
 	//	private final Environment env;
 	private final Greeting greeting;
-	private final UserService userService;
 	private final ModelMapper mapper;
+	
+	private final UserService userService;
 
 
 	@GetMapping("/health_check")

@@ -3,6 +3,7 @@ package seol.userservice.service;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import seol.userservice.dto.UserDto;
 import seol.userservice.jpa.UserEntity;
@@ -12,15 +13,18 @@ import seol.userservice.jpa.UserRepository;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-	private final UserRepository userRepository;
 	private final ModelMapper mapper;
+	private final BCryptPasswordEncoder passwordEncoder;
+
+	private final UserRepository userRepository;
+
 
 	@Override
 	public UserDto createUser(UserDto userDto) {
 		userDto.setUserId(UUID.randomUUID().toString());
 
 		UserEntity userEntity = mapper.map(userDto, UserEntity.class);
-		userEntity.setEncryptedPwd("encrypted_dummy_password");
+		userEntity.setEncryptedPwd(passwordEncoder.encode(userDto.getPwd()));
 
 		UserEntity savedUserEntity = userRepository.save(userEntity);
 

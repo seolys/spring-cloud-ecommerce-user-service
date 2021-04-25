@@ -1,4 +1,4 @@
-package seol.userservice.security;
+package seol.ecommerce.userservice.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

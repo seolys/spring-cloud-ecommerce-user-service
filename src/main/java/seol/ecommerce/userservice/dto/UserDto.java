@@ -1,7 +1,9 @@
-package seol.userservice.dto;
+package seol.ecommerce.userservice.dto;
 
 import java.util.Date;
+import java.util.List;
 import lombok.Data;
+import seol.ecommerce.userservice.vo.ResponseOrder;
 
 @Data
 public class UserDto {
@@ -13,5 +15,7 @@ public class UserDto {
 	private Date createdAt;
 
 	private String encryptedPwd;
+
+	private List<ResponseOrder> orders;
 
 }

@@ -1,4 +1,4 @@
-package seol.userservice;
+package seol.ecommerce.userservice;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;

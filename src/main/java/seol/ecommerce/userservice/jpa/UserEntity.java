@@ -1,4 +1,4 @@
-package seol.userservice.jpa;
+package seol.ecommerce.userservice.jpa;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

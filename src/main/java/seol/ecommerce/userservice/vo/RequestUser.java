@@ -1,4 +1,4 @@
-package seol.userservice.vo;
+package seol.ecommerce.userservice.vo;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;

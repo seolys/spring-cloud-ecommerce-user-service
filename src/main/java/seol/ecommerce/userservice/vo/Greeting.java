@@ -1,4 +1,4 @@
-package seol.userservice.vo;
+package seol.ecommerce.userservice.vo;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;

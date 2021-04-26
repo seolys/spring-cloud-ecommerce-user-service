@@ -25,7 +25,8 @@ import seol.ecommerce.userservice.vo.ResponseUser;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user-service")
+//@RequestMapping("/user-service") // NOTE: api-gateway에서 url 포워딩방식 변경.
+@RequestMapping("/")
 public class UserController {
 
 	private final Environment environment;

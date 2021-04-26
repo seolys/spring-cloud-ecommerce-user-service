@@ -15,35 +15,35 @@ import seol.ecommerce.userservice.service.UserService;
 @RequiredArgsConstructor
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
-	private Environment environment;
+	private final Environment environment;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final UserService userService;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable();
-//		http.authorizeRequests().antMatchers("/users/**").permitAll();
 
 		http.authorizeRequests().antMatchers("/**")
-				.hasIpAddress("127.0.0.1")
+//				.permitAll()
+				.hasIpAddress("172.30.1.7")
 				.and()
-				.addFilter(getAuthenticationFilter());
+				.addFilter(getAuthenticationFilter())
+				.csrf().disable();
 
 		http.headers().frameOptions().disable(); // h2-console 사용을 위한 처리.
 	}
 
 	private AuthenticationFilter getAuthenticationFilter() throws Exception {
-		AuthenticationFilter authenticationFilter = new AuthenticationFilter();
-		authenticationFilter.setAuthenticationManager(authenticationManager());
+		AuthenticationFilter authenticationFilter =
+				new AuthenticationFilter(authenticationManager(), userService, environment);
 		return authenticationFilter;
 	}
 
-	// select password from users where email = ?
+	// select pwd from users where email=?
 	// db_pwd(encrypted) == input_pwd(encrypted)
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder);
-		super.configure(auth);
 	}
 
 }

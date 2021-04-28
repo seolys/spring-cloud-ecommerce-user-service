@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,7 @@ import seol.ecommerce.userservice.jpa.UserEntity;
 import seol.ecommerce.userservice.jpa.UserRepository;
 import seol.ecommerce.userservice.vo.ResponseOrder;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -62,9 +64,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Optional<UserEntity> findUser = userRepository.findByEmail(username);
+		if (log.isDebugEnabled()) {
+			log.debug("Login Process 2. findUser={}", findUser.isPresent() ? findUser.get().getUserId() : null);
+		}
+
 		if (findUser.isEmpty()) {
 			throw new UsernameNotFoundException("User not found");
 		}
+
 		return new User(
 				username,
 				findUser.get().getEncryptedPwd(),

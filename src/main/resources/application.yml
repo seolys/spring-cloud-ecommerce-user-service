@@ -32,6 +32,14 @@ logging:
   level:
     seol.ecommerce: debug
 
-token:
-  expiration_time: 86400000
-  secret: user_token
+# ConfigServer에서 가져오도록 변경.
+#token:
+#  expiration_time: 86400000
+#  secret: user_token
+
+# Spring actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info, refresh, health, beans

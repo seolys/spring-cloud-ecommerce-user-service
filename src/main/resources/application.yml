@@ -15,6 +15,12 @@ spring:
     url: jdbc:h2:mem:testdb
     username: sa
     password:
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+
 
 eureka:
   instance:
@@ -42,4 +48,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: info, refresh, health, beans
+        include: info, refresh, health, beans, busrefresh

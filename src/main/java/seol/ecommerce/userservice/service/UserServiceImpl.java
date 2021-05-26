@@ -7,11 +7,16 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import seol.ecommerce.userservice.dto.UserDto;
 import seol.ecommerce.userservice.jpa.UserEntity;
 import seol.ecommerce.userservice.jpa.UserRepository;
@@ -24,7 +29,8 @@ public class UserServiceImpl implements UserService {
 
 	private final ModelMapper mapper;
 	private final BCryptPasswordEncoder passwordEncoder;
-
+	private final Environment environment;
+	private final RestTemplate restTemplate;
 	private final UserRepository userRepository;
 
 
@@ -50,8 +56,13 @@ public class UserServiceImpl implements UserService {
 
 		UserDto userDto = mapper.map(findUser.get(), UserDto.class);
 
-		List<ResponseOrder> orders = new ArrayList<>();
-		userDto.setOrders(orders);
+		// Using as rest template
+		String orderUrl = String.format(environment.getProperty("order-service.url"), userId);
+		ResponseEntity<List<ResponseOrder>> orderListResponse = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<ResponseOrder>>() {
+				});
+		List<ResponseOrder> orderList = orderListResponse.getBody();
+		userDto.setOrders(orderList);
 
 		return userDto;
 	}
@@ -67,7 +78,7 @@ public class UserServiceImpl implements UserService {
 		if (findUser.isEmpty()) {
 			throw new UsernameNotFoundException("User not found");
 		}
-		
+
 		return mapper.map(findUser.get(), UserDto.class);
 	}
 

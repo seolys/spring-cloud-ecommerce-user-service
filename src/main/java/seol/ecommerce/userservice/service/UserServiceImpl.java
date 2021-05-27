@@ -1,5 +1,6 @@
 package seol.ecommerce.userservice.service;
 
+import feign.FeignException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -7,16 +8,13 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import seol.ecommerce.userservice.client.OrderServiceClient;
 import seol.ecommerce.userservice.dto.UserDto;
 import seol.ecommerce.userservice.jpa.UserEntity;
 import seol.ecommerce.userservice.jpa.UserRepository;
@@ -30,7 +28,8 @@ public class UserServiceImpl implements UserService {
 	private final ModelMapper mapper;
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final Environment environment;
-	private final RestTemplate restTemplate;
+	//	private final RestTemplate restTemplate;
+	private final OrderServiceClient orderServiceClient;
 	private final UserRepository userRepository;
 
 
@@ -57,12 +56,21 @@ public class UserServiceImpl implements UserService {
 		UserDto userDto = mapper.map(findUser.get(), UserDto.class);
 
 		// Using as rest template
-		String orderUrl = String.format(environment.getProperty("order-service.url"), userId);
-		ResponseEntity<List<ResponseOrder>> orderListResponse = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<ResponseOrder>>() {
-				});
-		List<ResponseOrder> orderList = orderListResponse.getBody();
-		userDto.setOrders(orderList);
+//		String orderUrl = String.format(environment.getProperty("order-service.url"), userId);
+//		ResponseEntity<List<ResponseOrder>> orderListResponse = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
+//				new ParameterizedTypeReference<List<ResponseOrder>>() {
+//				});
+//		List<ResponseOrder> orders = orderListResponse.getBody();
+
+		// Using a feign client
+		List<ResponseOrder> orders = null;
+		try {
+			orders = orderServiceClient.getOrders(userId);
+		} catch (FeignException ex) {
+			log.error("getOrders Error", ex);
+		}
+
+		userDto.setOrders(orders);
 
 		return userDto;
 	}

@@ -1,17 +1,19 @@
 package seol.ecommerce.userservice;
 
+import feign.Logger;
+import feign.Logger.Level;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableDiscoveryClient
+@EnableFeignClients
 public class UserServiceApplication {
 
 	public static void main(String[] args) {
@@ -30,10 +32,16 @@ public class UserServiceApplication {
 		return new BCryptPasswordEncoder();
 	}
 
+	// FeignClients로 대체
+//	@Bean
+//	@LoadBalanced // 직접경로(ip/url) 대신 MicroService Name으로 호출할수 있도록 한다.
+//	public RestTemplate getRestTemplate() {
+//		return new RestTemplate();
+//	}
+
 	@Bean
-	@LoadBalanced // 직접경로(ip/url) 대신 MicroService Name으로 호출할수 있도록 한다.
-	public RestTemplate getRestTemplate() {
-		return new RestTemplate();
+	public Logger.Level feignLoggerLevel() {
+		return Level.FULL;
 	}
 
 }

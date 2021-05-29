@@ -36,7 +36,8 @@ greeting:
 
 logging:
   level:
-    seol.ecommerce: debug
+    #    seol.ecommerce: debug
+    seol.ecommerce.userservice.client: debug
 
 # ConfigServer에서 가져오도록 변경.
 #token:

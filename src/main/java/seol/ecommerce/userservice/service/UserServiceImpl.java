@@ -1,6 +1,5 @@
 package seol.ecommerce.userservice.service;
 
-import feign.FeignException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,13 +62,15 @@ public class UserServiceImpl implements UserService {
 //		List<ResponseOrder> orders = orderListResponse.getBody();
 
 		// Using a feign client
-		List<ResponseOrder> orders = null;
-		try {
-			orders = orderServiceClient.getOrders(userId);
-		} catch (FeignException ex) {
-			log.error("getOrders Error", ex);
-		}
+//		List<ResponseOrder> orders = null;
+//		try {
+//			orders = orderServiceClient.getOrders(userId);
+//		} catch (FeignException ex) {
+//			log.error("getOrders Error", ex);
+//		}
 
+		// feignErrorDecoder
+		List<ResponseOrder> orders = orders = orderServiceClient.getOrders(userId);
 		userDto.setOrders(orders);
 
 		return userDto;

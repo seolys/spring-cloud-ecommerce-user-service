@@ -44,4 +44,9 @@ public class UserServiceApplication {
 		return Level.FULL;
 	}
 
+//	@Bean
+//	public FeignErrorDecoder getFeignErrorDecoder() {
+//		return new FeignErrorDecoder();
+//	}
+
 }

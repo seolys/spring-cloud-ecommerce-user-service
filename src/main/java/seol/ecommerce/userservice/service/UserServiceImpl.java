@@ -1,12 +1,15 @@
 package seol.ecommerce.userservice.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,7 +33,7 @@ public class UserServiceImpl implements UserService {
 	//	private final RestTemplate restTemplate;
 	private final OrderServiceClient orderServiceClient;
 	private final UserRepository userRepository;
-
+	private final CircuitBreakerFactory circuitBreakerFactory;
 
 	@Override
 	public UserDto createUser(UserDto userDto) {
@@ -69,8 +72,13 @@ public class UserServiceImpl implements UserService {
 //			log.error("getOrders Error", ex);
 //		}
 
-		// feignErrorDecoder
-		List<ResponseOrder> orders = orders = orderServiceClient.getOrders(userId);
+		// feignErrorDecoder(FeignErrorDecoder.java 통해 오류처리함으로써 try-catch 제거)
+//		List<ResponseOrder> orders = orders = orderServiceClient.getOrders(userId);
+
+		// CircuitBreaker
+		CircuitBreaker orderCircuitBreaker = circuitBreakerFactory.create("orderCircuitBreaker");
+		List<ResponseOrder> orders = orderCircuitBreaker.run(() -> orderServiceClient.getOrders(userId),
+				/* 실패했을때 처리 */throwable -> Collections.emptyList());
 		userDto.setOrders(orders);
 
 		return userDto;

@@ -1,5 +1,6 @@
 package seol.ecommerce.userservice.controller;
 
+import io.micrometer.core.annotation.Timed;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
@@ -37,6 +38,7 @@ public class UserController {
 
 
 	@GetMapping("/health_check")
+	@Timed(value = "users.status", longTask = true)
 	public String status() {
 		return "It's working in User Service."
 				+ "\nport(local.server.port)=" + environment.getProperty("local.server.port")
@@ -47,12 +49,14 @@ public class UserController {
 	}
 
 	@GetMapping("/welcome")
+	@Timed(value = "users.welcome", longTask = true)
 	public String welcome() {
 //		return env.getProperty("greeting.message");
 		return greeting.getMessage();
 	}
 
 	@PostMapping("/users")
+	@Timed(value = "users.createUser", longTask = true)
 	public ResponseEntity<ResponseUser> createUser(@RequestBody @Valid RequestUser user) {
 		UserDto userDto = mapper.map(user, UserDto.class);
 		UserDto savedUserDto = userService.createUser(userDto);
@@ -65,6 +69,7 @@ public class UserController {
 	}
 
 	@GetMapping("/users")
+	@Timed(value = "users.getUsers", longTask = true)
 	public ResponseEntity<List<ResponseUser>> getUsers() {
 		Iterable<UserEntity> userList = userService.getUserByAll();
 
@@ -79,6 +84,7 @@ public class UserController {
 	}
 
 	@GetMapping("/users/{userId}")
+	@Timed(value = "users.getUser", longTask = true)
 	public ResponseEntity<ResponseUser> getUser(@PathVariable("userId") String userId) {
 		UserDto userDto = userService.getUserByUserId(userId);
 
